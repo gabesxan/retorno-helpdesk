@@ -1,0 +1,25 @@
+flowchart TB
+    A["01 · SOLICITANTE<br/>Relata o problema"] --> B["02 · FILA<br/>Categoria · prioridade · responsável"]
+    B --> C["03 · ATENDIMENTO<br/>Conversa · histórico · notas internas"]
+    C --> D{"Assistência<br/>opcional?"}
+    D -- "Não" --> H["05 · REVISÃO HUMANA<br/>Conferir · editar · decidir"]
+    D -- "Sim" --> E["04 · ASSISTÊNCIA<br/>Classificação ou rascunho"]
+    E -- "Classificação" --> H
+    E -- "Rascunho" --> F["BASE DE CONHECIMENTO<br/>Recuperar artigos publicados"]
+    F --> G["Fontes disponíveis ou<br/>limitação documental explícita"]
+    G --> H
+    H --> I["06 · RESPOSTA PÚBLICA<br/>Envio pelo atendente"]
+    I --> J{"Problema<br/>resolvido?"}
+    J -- "Não · aguardar cliente" --> C
+    J -- "Sim" --> K["07 · RESOLUÇÃO<br/>Histórico preservado"]
+    K -. "Reabertura" .-> C
+    classDef entry fill:#111111,stroke:#111111,color:#FFFFFF,stroke-width:2px;
+    classDef work fill:#F6F3FC,stroke:#7942DC,color:#26163D,stroke-width:2px;
+    classDef assist fill:#F1F8D6,stroke:#91A73A,color:#283311,stroke-width:2px;
+    classDef review fill:#DEFF57,stroke:#718922,color:#182000,stroke-width:2px;
+    classDef decision fill:#FFFFFF,stroke:#77766D,color:#222222;
+    class A,K entry;
+    class B,C,I work;
+    class E,F,G assist;
+    class H review;
+    class D,J decision;

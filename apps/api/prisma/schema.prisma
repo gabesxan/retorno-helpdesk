@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  REQUESTER
+  AGENT
+  ADMIN
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketCategory {
+  PRINTER_HARDWARE
+  INVENTORY_REPORTS
+  ACCESS_TERMINAL
+  OPERATOR_SETUP
+  FISCAL_POS
+  OTHER
+}
+
+enum MessageVisibility {
+  PUBLIC
+  INTERNAL
+}
+
+enum MessageKind {
+  MESSAGE
+  EVENT
+}
+
+model User {
+  id           String          @id @default(cuid())
+  name         String          @db.VarChar(120)
+  email        String          @unique @db.VarChar(180)
+  passwordHash String          @db.VarChar(255)
+  role         UserRole        @default(REQUESTER)
+  companyName  String          @db.VarChar(140)
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  sessions     Session[]
+  requested    Ticket[]        @relation("TicketRequester")
+  assigned     Ticket[]        @relation("TicketAssignee")
+  messages     TicketMessage[]
+  drafts       TicketDraft[]
+  articles     KnowledgeArticle[]
+
+  @@map("users")
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique @db.Char(64)
+  csrfSecret String    @db.Char(64)
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  lastSeenAt DateTime  @default(now())
+  userAgent  String?   @db.VarChar(255)
+  ipAddress  String?   @db.VarChar(64)
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model TicketSequence {
+  id         Int @id
+  lastNumber Int @default(0)
+
+  @@map("ticket_sequences")
+}
+
+model Ticket {
+  id                String          @id @default(cuid())
+  code              String          @unique @db.VarChar(20)
+  subject           String          @db.VarChar(180)
+  customerName      String          @db.VarChar(140)
+  status            TicketStatus    @default(OPEN)
+  priority          TicketPriority  @default(MEDIUM)
+  category          TicketCategory  @default(OTHER)
+  requesterId       String
+  assigneeId        String?
+  version           Int             @default(1)
+  resolvedAt        DateTime?
+  lastInteractionAt DateTime        @default(now())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  requester         User            @relation("TicketRequester", fields: [requesterId], references: [id])
+  assignee          User?           @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  messages          TicketMessage[]
+  drafts            TicketDraft[]
+
+  @@index([requesterId, status])
+  @@index([assigneeId, status])
+  @@index([status, priority, lastInteractionAt])
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id             String            @id @default(cuid())
+  ticketId       String
+  authorId       String
+  kind           MessageKind       @default(MESSAGE)
+  visibility     MessageVisibility @default(PUBLIC)
+  body           String            @db.Text
+  idempotencyKey String?           @db.VarChar(80)
+  createdAt      DateTime          @default(now())
+  ticket         Ticket            @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author         User              @relation(fields: [authorId], references: [id])
+
+  @@unique([ticketId, authorId, idempotencyKey])
+  @@index([ticketId, visibility, createdAt])
+  @@map("ticket_messages")
+}
+
+model TicketDraft {
+  id         String            @id @default(cuid())
+  ticketId   String
+  userId     String
+  visibility MessageVisibility @default(PUBLIC)
+  content    String            @db.Text
+  updatedAt  DateTime          @updatedAt
+  ticket     Ticket            @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([ticketId, userId, visibility])
+  @@map("ticket_drafts")
+}
+
+model KnowledgeArticle {
+  id           String         @id @default(cuid())
+  slug         String         @unique @db.VarChar(160)
+  title        String         @db.VarChar(180)
+  category     TicketCategory
+  summary      String         @db.VarChar(400)
+  tags         String         @db.VarChar(255)
+  bodyMarkdown String         @db.MediumText
+  isPublished  Boolean        @default(true)
+  authorId     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  author       User           @relation(fields: [authorId], references: [id])
+
+  @@fulltext([title, summary, tags, bodyMarkdown])
+  @@map("knowledge_articles")
+}

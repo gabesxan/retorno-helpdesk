@@ -1,0 +1,43 @@
+{
+  "name": "retorno-helpdesk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RETORNO — Help desk para suporte a sistemas de automação comercial",
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "db:start": "node scripts/db-env.mjs start",
+    "db:ensure": "node scripts/db-env.mjs ensure",
+    "db:migrate": "npm --workspace @retorno/api run prisma:deploy",
+    "db:seed": "npm --workspace @retorno/api run seed",
+    "dev": "npm run dev:api",
+    "dev:api": "npm --workspace @retorno/api run dev",
+    "dev:web": "npm --workspace @retorno/web run dev",
+    "build": "npm --workspace @retorno/api run build && npm --workspace @retorno/web run build",
+    "typecheck": "npm --workspace @retorno/api run typecheck && npm --workspace @retorno/web run typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:backend": "npm --workspace @retorno/api run test",
+    "test:frontend": "npm --workspace @retorno/web run test",
+    "test:e2e": "playwright test",
+    "security:secrets": "node scripts/secret-scan.mjs",
+    "security:audit": "npm audit --audit-level=high"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.65.1",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.14.0",
+    "mysql-memory-server": "^1.18.0",
+    "mysql2": "^3.24.6",
+    "prettier": "^3.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.73.0"
+  }
+}

@@ -1,0 +1,53 @@
+:root {
+  /* Paleta base — Brutalismo Digital Claro */
+  --bg-canvas: #f6f6f3;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #efefea;
+  --bg-surface-hover: #f2f2ed;
+
+  --text-primary: #111111;
+  --text-secondary: #464642;
+  --text-muted: #5e5e58;
+
+  --border-grid: #d8d8d3;
+  --border-strong: #111111;
+
+  /* Acentos */
+  --accent-purple: #7942dc;
+  --accent-purple-hover: #612ec2;
+  --accent-purple-soft: #f2ecfc;
+  --accent-lime: #deff57;
+  --accent-lime-border: #a5c421;
+
+  /* Semântica (sempre acompanhada de rótulo textual) */
+  --semantic-error: #b91c1c;
+  --semantic-error-bg: #fef2f2;
+  --semantic-success: #166534;
+  --semantic-success-bg: #f0fdf4;
+  --semantic-warning: #9a3412;
+  --semantic-warning-bg: #fff7ed;
+  --semantic-info: #1e40af;
+  --semantic-info-bg: #eff6ff;
+
+  /* Nota interna — visualmente distinta da resposta pública */
+  --internal-bg: #fff9db;
+  --internal-border: #b45309;
+  --internal-text: #78350f;
+
+  /* Tipografia */
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Forma e espaçamento */
+  --radius-sharp: 0px;
+  --radius-xs: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  --focus-ring: 2px solid var(--accent-purple);
+}

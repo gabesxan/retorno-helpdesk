@@ -1,0 +1,59 @@
+services:
+  mysql-dev:
+    image: mysql:8.4
+    container_name: retorno-mysql-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: retorno_dev
+      MYSQL_USER: retorno_app
+      MYSQL_PASSWORD: retorno_dev_local_pass
+      MYSQL_ROOT_PASSWORD: retorno_dev_root_pass
+    ports:
+      - '127.0.0.1:33306:3306'
+    volumes:
+      - retorno_mysql_dev_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          '127.0.0.1',
+          '-uretorno_app',
+          '-pretorno_dev_local_pass',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  mysql-test:
+    image: mysql:8.4
+    container_name: retorno-mysql-test
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: retorno_test
+      MYSQL_USER: retorno_test
+      MYSQL_PASSWORD: retorno_test_local_pass
+      MYSQL_ROOT_PASSWORD: retorno_test_root_pass
+    ports:
+      - '127.0.0.1:33307:3306'
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          '127.0.0.1',
+          '-uretorno_test',
+          '-pretorno_test_local_pass',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  retorno_mysql_dev_data:
